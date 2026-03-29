@@ -592,6 +592,9 @@ body {
 }
 .response-model-icon.claude { background: #D97706; }
 .response-model-icon.gpt { background: #10A37F; }
+.response-model-icon.gemini { background: #4285F4; }
+.response-model-icon.llama { background: #7C3AED; }
+.response-model-icon.deepseek { background: #0EA5E9; }
 .response-model-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
 .response-body {
   padding: 10px 12px;
@@ -971,8 +974,16 @@ function renderResponses(p) {
       AI Responses (base condition)
     </div>
     ${Object.entries(p.responses).map(([m, r]) => {
-      const cls = m === 'Claude' ? 'claude' : 'gpt';
-      const letter = m === 'Claude' ? 'C' : 'G';
+      const modelStyles = {
+        'Claude': { cls: 'claude', letter: 'C' },
+        'gpt-4o': { cls: 'gpt', letter: 'G' },
+        'Gemini': { cls: 'gemini', letter: 'Ge' },
+        'Llama-70B': { cls: 'llama', letter: 'L' },
+        'DeepSeek': { cls: 'deepseek', letter: 'D' },
+      };
+      const style = modelStyles[m] || { cls: 'gpt', letter: m[0] };
+      const cls = style.cls;
+      const letter = style.letter;
       return `<div class="response-card">
         <div class="response-header">
           <div class="response-model-icon ${cls}">${letter}</div>

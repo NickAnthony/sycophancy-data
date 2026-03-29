@@ -3,233 +3,748 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AITA Sycophancy Explorer</title>
+<title>r/AITA Sycophancy Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #21262d;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --accent: #58a6ff;
-    --green: #3fb950;
-    --red: #f85149;
-    --orange: #d29922;
-    --purple: #bc8cff;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-  }
-  .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+:root {
+  --cream: #FAF9F6;
+  --warm-white: #FFFFFF;
+  --ink: #1A1A1B;
+  --ink-light: #3c3c3d;
+  --ink-muted: #7c7c7c;
+  --ink-faint: #a8a8a8;
+  --border: #EDEFF1;
+  --border-strong: #ccc;
+  --orangered: #FF4500;
+  --orangered-soft: #fff0eb;
+  --orangered-muted: #ff6d3a;
+  --periwinkle: #7193FF;
+  --periwinkle-soft: #edf0ff;
+  --nta-green: #46D160;
+  --nta-green-bg: #e8fbe9;
+  --nta-green-dark: #1f8435;
+  --yta-red: #EA0027;
+  --yta-red-bg: #fde8ec;
+  --yta-red-dark: #b5001e;
+  --syc-amber: #F59E0B;
+  --syc-amber-bg: #FEF3C7;
+  --syc-amber-dark: #B45309;
+  --surface-hover: #F6F7F8;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
 
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 24px 0;
-    margin-bottom: 16px;
-  }
-  header h1 { font-size: 1.6rem; margin-bottom: 4px; }
-  header p { color: var(--text-muted); font-size: 0.9rem; }
-  header a { color: var(--accent); text-decoration: none; }
-  header a:hover { text-decoration: underline; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 12px;
-    padding: 16px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 8px;
-    margin-bottom: 16px; align-items: center;
-  }
-  .controls label { color: var(--text-muted); font-size: 0.85rem; }
-  .controls select, .controls input {
-    background: var(--surface2); color: var(--text); border: 1px solid var(--border);
-    border-radius: 6px; padding: 6px 10px; font-size: 0.85rem;
-  }
-  .controls select:focus, .controls input:focus { outline: none; border-color: var(--accent); }
-  .control-group { display: flex; flex-direction: column; gap: 4px; }
+body {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
 
-  .stats {
-    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
-    font-size: 0.85rem; color: var(--text-muted);
-  }
-  .stats span { background: var(--surface); padding: 4px 10px; border-radius: 4px; }
-  .stats .num { color: var(--accent); font-weight: 600; }
+/* ═══════════════════ HEADER BAR ═══════════════════ */
+.topbar {
+  background: var(--warm-white);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 12px;
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.topbar-logo svg { width: 28px; height: 28px; }
+.topbar-logo span {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+.topbar-logo .sub {
+  color: var(--ink-muted);
+  font-weight: 400;
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
+.topbar-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.topbar-stats b { color: var(--ink); font-weight: 600; }
 
-  .post-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .post-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 16px;
-    cursor: pointer;
-    gap: 12px;
-  }
-  .post-header:hover { background: var(--surface2); }
-  .post-header .left { flex: 1; min-width: 0; }
-  .post-header .title {
-    font-size: 0.95rem;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .post-header .badges { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+/* ═══════════════════ HERO BANNER ═══════════════════ */
+.hero {
+  background: linear-gradient(135deg, #FF4500 0%, #FF6B3A 50%, #FF8C5A 100%);
+  padding: 40px 20px 36px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 40px 40px;
+}
+.hero-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.hero h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.hero p {
+  font-size: 0.92rem;
+  opacity: 0.92;
+  max-width: 640px;
+  line-height: 1.5;
+}
+.hero a {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
-  .badge {
-    font-size: 0.75rem; font-weight: 600;
-    padding: 2px 8px; border-radius: 12px;
-    white-space: nowrap;
-  }
-  .badge-nta { background: rgba(63,185,80,0.15); color: var(--green); }
-  .badge-yta { background: rgba(248,81,73,0.15); color: var(--red); }
-  .badge-syc {
-    background: rgba(210,153,34,0.15); color: var(--orange);
-    font-size: 0.7rem;
-  }
+/* ═══════════════════ LAYOUT ═══════════════════ */
+.layout {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 20px 40px;
+}
 
-  .post-body {
-    display: none;
-    padding: 0 16px 16px;
-    border-top: 1px solid var(--border);
-  }
-  .post-body.open { display: block; }
+/* ═══════════════════ FILTER BAR ═══════════════════ */
+.filter-bar {
+  background: var(--warm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.filter-group label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+.filter-group select,
+.filter-group input[type="number"],
+.filter-group input[type="text"] {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--cream);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filter-group select:focus,
+.filter-group input:focus {
+  border-color: var(--orangered);
+  box-shadow: 0 0 0 3px var(--orangered-soft);
+}
+.filter-group select { cursor: pointer; min-width: 130px; }
+.filter-group input[type="number"] { width: 68px; }
+.filter-group input[type="text"] { width: 160px; }
+.filter-separator {
+  width: 1px;
+  height: 32px;
+  background: var(--border);
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
 
-  .narrative {
-    background: var(--surface2);
-    padding: 12px; border-radius: 6px;
-    margin: 12px 0;
-    font-size: 0.9rem;
-    white-space: pre-wrap;
-    max-height: 300px;
-    overflow-y: auto;
-  }
+/* ═══════════════════ RESULTS META ═══════════════════ */
+.results-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+.results-count {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+.results-count b { color: var(--ink); font-weight: 600; }
+.results-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
 
-  .section-label {
-    font-size: 0.8rem; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.05em;
-    margin: 16px 0 8px;
-    font-weight: 600;
-  }
+/* ═══════════════════ POST CARD ═══════════════════ */
+.post-card {
+  background: var(--warm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, border-color 0.2s;
+  overflow: hidden;
+}
+.post-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+.post-card.expanded {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
 
-  .judgment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 6px;
-  }
-  .judgment-cell {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 10px;
-    background: var(--surface2);
-    border-radius: 4px;
-    font-size: 0.8rem;
-  }
-  .judgment-cell .model-name { color: var(--text-muted); }
-  .judgment-cell .verdict-nta { color: var(--green); font-weight: 600; }
-  .judgment-cell .verdict-yta { color: var(--red); font-weight: 600; }
-  .judgment-cell.flipped { border-left: 3px solid var(--orange); }
-  .judgment-cell.agrees-reddit { opacity: 0.7; }
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: stretch;
+  cursor: pointer;
+  min-height: 68px;
+}
 
-  .condition-tabs {
-    display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;
-  }
-  .condition-tab {
-    background: var(--surface2); color: var(--text-muted);
-    border: 1px solid var(--border); border-radius: 4px;
-    padding: 4px 10px; font-size: 0.75rem;
-    cursor: pointer;
-  }
-  .condition-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+/* Vote column (Reddit-style) */
+.vote-col {
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 0;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: #FAFAFA;
+}
+.vote-arrow {
+  width: 20px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vote-arrow svg { width: 14px; height: 10px; }
+.vote-arrow.up svg { fill: var(--nta-green); }
+.vote-arrow.down svg { fill: var(--yta-red); }
+.vote-col .reddit-verdict {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.vote-col .reddit-verdict.nta { color: var(--nta-green-dark); }
+.vote-col .reddit-verdict.yta { color: var(--yta-red-dark); }
 
-  .syc-detail {
-    font-size: 0.8rem; color: var(--orange); margin-top: 8px;
-    padding: 8px; background: rgba(210,153,34,0.08); border-radius: 4px;
-  }
-  .syc-detail div { margin-bottom: 2px; }
+/* Card content */
+.card-content {
+  flex: 1;
+  padding: 10px 14px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+.card-meta .sub-tag {
+  color: var(--ink);
+  font-weight: 600;
+}
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
 
-  .response-block {
-    margin-top: 12px;
-    padding: 10px;
-    background: var(--surface2);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    white-space: pre-wrap;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  .response-block .model-tag {
-    color: var(--purple); font-weight: 600; font-size: 0.8rem;
-    margin-bottom: 4px;
-  }
+/* Sycophancy gauge */
+.syc-col {
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  gap: 4px;
+}
+.syc-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.syc-gauge {
+  width: 80px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.syc-gauge-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.syc-gauge-fill.low { background: var(--nta-green); }
+.syc-gauge-fill.med { background: var(--syc-amber); }
+.syc-gauge-fill.high { background: var(--orangered); }
+.syc-score {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.syc-score.low { color: var(--nta-green-dark); }
+.syc-score.med { color: var(--syc-amber-dark); }
+.syc-score.high { color: var(--orangered); }
 
-  .pagination {
-    display: flex; justify-content: center; align-items: center;
-    gap: 8px; padding: 16px 0;
-  }
-  .pagination button {
-    background: var(--surface2); color: var(--text); border: 1px solid var(--border);
-    border-radius: 6px; padding: 8px 16px; cursor: pointer; font-size: 0.85rem;
-  }
-  .pagination button:disabled { opacity: 0.3; cursor: default; }
-  .pagination button:not(:disabled):hover { border-color: var(--accent); }
-  .pagination span { color: var(--text-muted); font-size: 0.85rem; }
+/* Expand chevron */
+.expand-chevron {
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ink-faint);
+  transition: transform 0.2s, color 0.15s;
+}
+.post-card.expanded .expand-chevron { transform: rotate(180deg); color: var(--ink-muted); }
 
-  .loading {
-    text-align: center; padding: 60px; color: var(--text-muted);
-  }
-  .loading .spinner {
-    width: 32px; height: 32px;
-    border: 3px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-    margin: 0 auto 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ═══════════════════ EXPANDED BODY ═══════════════════ */
+.card-body {
+  display: none;
+  border-top: 1px solid var(--border);
+}
+.card-body.open { display: block; }
 
-  .legend {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    font-size: 0.75rem; color: var(--text-muted);
-    margin-bottom: 12px;
-  }
-  .legend span { display: flex; align-items: center; gap: 4px; }
-  .legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+/* Narrative */
+.narrative-section { padding: 16px 16px 12px; }
+.narrative-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.narrative-label svg { width: 14px; height: 14px; fill: var(--ink-muted); }
+.narrative-text {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--ink-light);
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 14px 16px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.narrative-text::-webkit-scrollbar { width: 6px; }
+.narrative-text::-webkit-scrollbar-track { background: transparent; }
+.narrative-text::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* Verdict comparison */
+.verdict-section {
+  padding: 0 16px 16px;
+}
+.verdict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.verdict-header h3 {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+.reddit-verdict-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.reddit-verdict-badge.nta { background: var(--nta-green-bg); color: var(--nta-green-dark); }
+.reddit-verdict-badge.yta { background: var(--yta-red-bg); color: var(--yta-red-dark); }
+
+/* Condition tabs */
+.cond-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.cond-tab {
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-muted);
+  background: var(--warm-white);
+  border-right: 1px solid var(--border);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cond-tab:last-child { border-right: none; }
+.cond-tab:hover { background: var(--surface-hover); color: var(--ink); }
+.cond-tab.active {
+  background: var(--orangered);
+  color: white;
+  font-weight: 600;
+}
+
+/* Model grid */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 5px;
+}
+.model-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  transition: border-color 0.15s;
+}
+.model-cell .mname {
+  color: var(--ink-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.model-cell .mverdict {
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.model-cell .mverdict.nta { color: var(--nta-green-dark); background: var(--nta-green-bg); }
+.model-cell .mverdict.yta { color: var(--yta-red-dark); background: var(--yta-red-bg); }
+.model-cell.disagrees {
+  border-color: var(--syc-amber);
+  background: #FFFBEB;
+}
+.model-cell.disagrees .mname { color: var(--ink-light); }
+.model-cell .disagree-star {
+  color: var(--syc-amber-dark);
+  font-size: 0.7rem;
+  margin-left: 3px;
+}
+
+/* Sycophancy flips */
+.flips-section {
+  padding: 0 16px 16px;
+}
+.flips-box {
+  background: var(--syc-amber-bg);
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.flips-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--syc-amber-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flips-title svg { width: 14px; height: 14px; fill: var(--syc-amber-dark); }
+.flip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid rgba(245,158,11,0.15);
+}
+.flip-row:last-child { border-bottom: none; }
+.flip-model {
+  font-weight: 600;
+  color: var(--ink-light);
+  min-width: 90px;
+}
+.flip-arrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+}
+.flip-arrow .v-nta { color: var(--nta-green-dark); font-weight: 600; }
+.flip-arrow .v-yta { color: var(--yta-red-dark); font-weight: 600; }
+.flip-arrow .arrow-icon { color: var(--ink-faint); }
+.flip-ctx {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+/* AI Responses */
+.responses-section { padding: 0 16px 16px; }
+.response-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.response-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-hover);
+}
+.response-model-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.response-model-icon.claude { background: #D97706; }
+.response-model-icon.gpt { background: #10A37F; }
+.response-model-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.response-body {
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--ink-light);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.response-body::-webkit-scrollbar { width: 5px; }
+.response-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+/* ═══════════════════ PAGINATION ═══════════════════ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 0;
+}
+.pagination button {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--warm-white);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.pagination button:not(:disabled):hover {
+  border-color: var(--orangered);
+  color: var(--orangered);
+  box-shadow: var(--shadow-md);
+}
+.pagination button:disabled { opacity: 0.35; cursor: default; }
+.pagination .page-info {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  padding: 0 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ═══════════════════ LOADING ═══════════════════ */
+.loading-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--ink-muted);
+}
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--orangered);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state p { font-size: 0.9rem; }
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-muted);
+}
+.no-results p { font-size: 0.92rem; }
+
+/* ═══════════════════ ANIMATIONS ═══════════════════ */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.post-card {
+  animation: fadeSlideIn 0.25s ease both;
+}
+
+/* ═══════════════════ RESPONSIVE ═══════════════════ */
+@media (max-width: 700px) {
+  .hero h1 { font-size: 1.3rem; }
+  .topbar-stats { display: none; }
+  .filter-bar { gap: 8px; }
+  .filter-separator { display: none; }
+  .filter-group select,
+  .filter-group input[type="text"] { min-width: 100px; width: 100%; }
+  .syc-col { width: 80px; padding: 8px 6px; }
+  .syc-gauge { width: 56px; }
+  .vote-col { width: 40px; }
+  .card-title { font-size: 0.88rem; }
+  .model-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .results-legend { display: none; }
+  .cond-tab { padding: 5px 8px; font-size: 0.68rem; }
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>AITA Sycophancy Explorer</h1>
-    <p>Exploring AI sycophancy in moral judgment: Reddit verdicts vs. LLM responses across prompting conditions.<br>
-    Data from <a href="https://arxiv.org/html/2510.01395v1" target="_blank">Sycophancy in LLM Moral Reasoning (arXiv:2510.01395)</a></p>
-  </header>
 
-  <div class="controls">
-    <div class="control-group">
-      <label>Sort by</label>
+<!-- Top bar -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a class="topbar-logo" href="#">
+      <svg viewBox="0 0 24 24" fill="var(--orangered)"><circle cx="12" cy="12" r="12"/><circle cx="12" cy="10" r="5" fill="white"/><rect x="10" y="4" width="4" height="3" rx="2" fill="white"/><circle cx="9" cy="9.5" r="1" fill="var(--orangered)"/><circle cx="15" cy="9.5" r="1" fill="var(--orangered)"/><path d="M9 12.5c0 0 1.5 1.5 3 1.5s3-1.5 3-1.5" stroke="var(--orangered)" stroke-width="0.8" fill="none" stroke-linecap="round"/></svg>
+      <span>r/AITA<span class="sub"> Sycophancy Explorer</span></span>
+    </a>
+    <div class="topbar-stats" id="topbarStats"></div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Do AI Models Just Tell You What You Want to Hear?</h1>
+    <p>Exploring sycophancy in LLM moral reasoning across 4,000 r/AmItheAsshole posts.
+    Data from <a href="https://arxiv.org/html/2510.01395v1" target="_blank">arXiv:2510.01395</a>
+    &mdash; comparing Reddit verdicts with 11 AI models under different prompting conditions.</p>
+  </div>
+</section>
+
+<!-- Main content -->
+<div class="layout">
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Sort</label>
       <select id="sortBy">
-        <option value="syc-desc">Most sycophantic</option>
-        <option value="syc-asc">Least sycophantic</option>
-        <option value="id">Original order</option>
+        <option value="syc-desc">Most Sycophantic</option>
+        <option value="syc-asc">Least Sycophantic</option>
+        <option value="id">Post Order</option>
       </select>
     </div>
-    <div class="control-group">
-      <label>Reddit verdict</label>
+    <div class="filter-separator"></div>
+    <div class="filter-group">
+      <label>Reddit Verdict</label>
       <select id="filterReddit">
-        <option value="all">All</option>
-        <option value="NTA">NTA only</option>
-        <option value="YTA">YTA only</option>
+        <option value="all">All Verdicts</option>
+        <option value="NTA">NTA Only</option>
+        <option value="YTA">YTA Only</option>
       </select>
     </div>
-    <div class="control-group">
-      <label>Min sycophancy score</label>
-      <input type="number" id="minSyc" value="0" min="0" max="12" step="0.5" style="width:70px">
+    <div class="filter-group">
+      <label>Min Syc Score</label>
+      <input type="number" id="minSyc" value="0" min="0" max="12" step="0.5">
     </div>
-    <div class="control-group">
-      <label>Model disagrees with Reddit</label>
+    <div class="filter-separator"></div>
+    <div class="filter-group">
+      <label>Model Disagrees</label>
       <select id="filterDisagree">
-        <option value="any">Any</option>
+        <option value="any">Any Model</option>
         <option value="Claude">Claude</option>
         <option value="gpt-4o">GPT-4o</option>
         <option value="Gemini">Gemini</option>
@@ -238,20 +753,24 @@
         <option value="Mistral-24B">Mistral-24B</option>
       </select>
     </div>
-    <div class="control-group">
-      <label>Search narrative</label>
-      <input type="text" id="searchText" placeholder="keyword..." style="width:140px">
+    <div class="filter-separator"></div>
+    <div class="filter-group">
+      <label>Search</label>
+      <input type="text" id="searchText" placeholder="Search posts...">
     </div>
   </div>
 
-  <div class="stats" id="stats"></div>
-
-  <div class="legend">
-    <span><span class="dot" style="background:var(--green)"></span> NTA (Not The Asshole)</span>
-    <span><span class="dot" style="background:var(--red)"></span> YTA (You're The Asshole)</span>
-    <span><span class="dot" style="background:var(--orange)"></span> Sycophantic flip (changes with framing)</span>
+  <!-- Results meta -->
+  <div class="results-meta">
+    <div class="results-count" id="resultsCount"></div>
+    <div class="results-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--nta-green)"></span> NTA</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--yta-red)"></span> YTA</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--syc-amber)"></span> Disagrees w/ Reddit</span>
+    </div>
   </div>
 
+  <!-- Post list -->
   <div id="postList"></div>
   <div class="pagination" id="pagination"></div>
 </div>
@@ -263,9 +782,17 @@ let filtered = [];
 let page = 0;
 let activeCondition = {};
 
+const COND_LABELS = {
+  base:'Base', NTA_context:'NTA Framing', YTA_context:'YTA Framing',
+  third_person:'3rd Person', think_right:'Think Right', think_wrong:'Think Wrong',
+  honest:'Honest', direct:'Direct', cot:'Chain-of-Thought', questioning:'Questioning',
+  iterative_response:'Iterative'
+};
+const CONDITIONS = Object.keys(COND_LABELS);
+
 async function init() {
-  document.getElementById('postList').innerHTML = `
-    <div class="loading"><div class="spinner"></div>Loading 4,000 AITA posts...</div>`;
+  document.getElementById('postList').innerHTML =
+    '<div class="loading-state"><div class="loading-spinner"></div><p>Loading 4,000 AITA posts...</p></div>';
   const resp = await fetch('data.json');
   allPosts = await resp.json();
   bindControls();
@@ -300,18 +827,23 @@ function applyFilters() {
   else if (sort === 'syc-asc') filtered.sort((a, b) => a.sycScore - b.sycScore);
   else filtered.sort((a, b) => a.id - b.id);
 
-  renderStats();
+  updateMeta();
   renderPage();
 }
 
-function renderStats() {
-  const avgSyc = filtered.length ? (filtered.reduce((s, p) => s + p.sycScore, 0) / filtered.length).toFixed(1) : 0;
-  const ytaCount = filtered.filter(p => p.reddit === 'YTA').length;
-  document.getElementById('stats').innerHTML = `
-    <span>Showing <span class="num">${filtered.length}</span> / ${allPosts.length} posts</span>
-    <span>Avg sycophancy: <span class="num">${avgSyc}</span></span>
-    <span>Reddit YTA: <span class="num">${ytaCount}</span> (${filtered.length ? Math.round(100*ytaCount/filtered.length) : 0}%)</span>
-  `;
+function updateMeta() {
+  const avg = filtered.length ? (filtered.reduce((s, p) => s + p.sycScore, 0) / filtered.length).toFixed(1) : '0';
+  const yta = filtered.filter(p => p.reddit === 'YTA').length;
+  document.getElementById('resultsCount').innerHTML =
+    `<b>${filtered.length}</b> of ${allPosts.length} posts &middot; avg sycophancy <b>${avg}</b> &middot; <b>${yta}</b> Reddit YTA`;
+  document.getElementById('topbarStats').innerHTML =
+    `<span><b>${filtered.length}</b> posts</span><span>avg syc <b>${avg}</b></span>`;
+}
+
+function sycLevel(score) {
+  if (score <= 2) return 'low';
+  if (score <= 6) return 'med';
+  return 'high';
 }
 
 function renderPage() {
@@ -320,101 +852,139 @@ function renderPage() {
   const list = document.getElementById('postList');
 
   if (!slice.length) {
-    list.innerHTML = '<div class="loading">No posts match your filters.</div>';
+    list.innerHTML = '<div class="no-results"><p>No posts match your filters. Try adjusting the criteria.</p></div>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
 
   list.innerHTML = slice.map((p, idx) => {
-    const globalIdx = start + idx;
-    const titleText = p.narrative.split('\n')[0].substring(0, 120);
+    const gi = start + idx;
+    const title = p.narrative.split('\n')[0].substring(0, 150);
+    const lvl = sycLevel(p.sycScore);
+    const pct = Math.min(100, Math.round((p.sycScore / 12) * 100));
     return `
-      <div class="post-card" id="post-${globalIdx}">
-        <div class="post-header" onclick="togglePost(${globalIdx})">
-          <div class="left">
-            <div class="title">#${globalIdx + 1} &mdash; ${esc(titleText)}</div>
+    <div class="post-card" id="post-${gi}" style="animation-delay:${idx * 0.03}s">
+      <div class="card-header" onclick="toggle(${gi})">
+        <div class="vote-col">
+          <div class="vote-arrow ${p.reddit === 'NTA' ? 'up' : 'down'}">
+            ${p.reddit === 'NTA'
+              ? '<svg viewBox="0 0 14 10"><path d="M7 0L14 10H0Z"/></svg>'
+              : '<svg viewBox="0 0 14 10"><path d="M7 10L0 0h14Z"/></svg>'}
           </div>
-          <div class="badges">
-            <span class="badge badge-syc">syc: ${p.sycScore}</span>
-            <span class="badge badge-${p.reddit.toLowerCase()}">Reddit: ${p.reddit}</span>
-          </div>
+          <span class="reddit-verdict ${p.reddit.toLowerCase()}">${p.reddit}</span>
         </div>
-        <div class="post-body" id="body-${globalIdx}">
-          <div class="section-label">AITA Post</div>
-          <div class="narrative">${esc(p.narrative)}</div>
-
-          <div class="section-label">Model Judgments (binary)</div>
-          <div class="condition-tabs" id="tabs-${globalIdx}">
-            ${renderTabs(globalIdx, p)}
+        <div class="card-content">
+          <div class="card-meta">
+            <span class="sub-tag">r/AmItheAsshole</span>
+            <span>&middot; Post #${p.id + 1}</span>
           </div>
-          <div class="judgment-grid" id="grid-${globalIdx}">
-            ${renderGrid(p, 'base')}
-          </div>
-
-          ${Object.keys(p.sycDetails).length ? `
-            <div class="section-label">Sycophantic Flips (NTA context vs YTA context)</div>
-            <div class="syc-detail">
-              ${Object.entries(p.sycDetails).map(([m, d]) => `<div><strong>${esc(m)}:</strong> ${esc(d)}</div>`).join('')}
-            </div>
-          ` : ''}
-
-          ${Object.keys(p.responses).length ? `
-            <div class="section-label">Sample AI Responses (base condition)</div>
-            ${Object.entries(p.responses).map(([m, r]) => `
-              <div class="response-block">
-                <div class="model-tag">${esc(m)}</div>
-                ${esc(r)}
-              </div>
-            `).join('')}
-          ` : ''}
+          <div class="card-title">${esc(title)}</div>
         </div>
-      </div>`;
+        <div class="syc-col">
+          <span class="syc-label">Sycophancy</span>
+          <div class="syc-gauge"><div class="syc-gauge-fill ${lvl}" style="width:${pct}%"></div></div>
+          <span class="syc-score ${lvl}">${p.sycScore}</span>
+        </div>
+        <div class="expand-chevron">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 6L8 9.5L11.5 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="card-body" id="body-${gi}">
+        <div class="narrative-section">
+          <div class="narrative-label">
+            <svg viewBox="0 0 16 16"><path d="M2 3h12v1H2zm0 3h12v1H2zm0 3h8v1H2zm0 3h10v1H2z"/></svg>
+            Original Post
+          </div>
+          <div class="narrative-text">${esc(p.narrative)}</div>
+        </div>
+        <div class="verdict-section">
+          <div class="verdict-header">
+            <h3>Model Judgments</h3>
+            <span class="reddit-verdict-badge ${p.reddit.toLowerCase()}">Reddit: ${p.reddit}</span>
+          </div>
+          <div class="cond-tabs" id="tabs-${gi}">${renderTabs(gi, p)}</div>
+          <div class="model-grid" id="grid-${gi}">${renderGrid(p, 'base')}</div>
+        </div>
+        ${Object.keys(p.sycDetails).length ? renderFlips(p) : ''}
+        ${Object.keys(p.responses).length ? renderResponses(p) : ''}
+      </div>
+    </div>`;
   }).join('');
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const total = Math.ceil(filtered.length / PAGE_SIZE);
   document.getElementById('pagination').innerHTML = `
-    <button onclick="changePage(-1)" ${page === 0 ? 'disabled' : ''}>Prev</button>
-    <span>Page ${page + 1} of ${totalPages}</span>
-    <button onclick="changePage(1)" ${page >= totalPages - 1 ? 'disabled' : ''}>Next</button>
-  `;
+    <button onclick="nav(-1)" ${page === 0 ? 'disabled' : ''}>&larr; Previous</button>
+    <span class="page-info">${page + 1} / ${total}</span>
+    <button onclick="nav(1)" ${page >= total - 1 ? 'disabled' : ''}>Next &rarr;</button>`;
 }
 
 function renderTabs(idx, post) {
-  const conditions = ['base','NTA_context','YTA_context','third_person','think_right','think_wrong',
-    'honest','direct','cot','questioning','iterative_response'];
-  const labels = {
-    base:'Base', NTA_context:'NTA Context', YTA_context:'YTA Context',
-    third_person:'3rd Person', think_right:'Think Right', think_wrong:'Think Wrong',
-    honest:'Honest', direct:'Direct', cot:'CoT', questioning:'Questioning',
-    iterative_response:'Iterative'
-  };
-  // Only show conditions that have data for this post
-  const available = conditions.filter(c =>
-    Object.values(post.judgments).some(mj => mj[c] != null)
-  );
+  const avail = CONDITIONS.filter(c =>
+    Object.values(post.judgments).some(mj => mj[c] != null));
   activeCondition[idx] = activeCondition[idx] || 'base';
-  return available.map(c =>
-    `<span class="condition-tab ${activeCondition[idx] === c ? 'active' : ''}"
-          onclick="switchCondition(${idx}, '${c}', event)">${labels[c] || c}</span>`
+  return avail.map(c =>
+    `<span class="cond-tab ${activeCondition[idx] === c ? 'active' : ''}"
+          onclick="switchCond(${idx},'${c}',event)">${COND_LABELS[c]}</span>`
   ).join('');
 }
 
-function renderGrid(post, condition) {
-  const models = Object.keys(post.judgments).sort();
-  return models.map(m => {
-    const v = post.judgments[m][condition];
+function renderGrid(post, cond) {
+  return Object.keys(post.judgments).sort().map(m => {
+    const v = post.judgments[m][cond];
     if (v == null) return '';
-    const cls = v === 'NTA' ? 'verdict-nta' : 'verdict-yta';
-    const disagrees = v !== post.reddit;
-    const flipped = post.sycDetails[m] && (condition === 'NTA_context' || condition === 'YTA_context');
-    return `<div class="judgment-cell ${flipped ? 'flipped' : ''} ${!disagrees ? 'agrees-reddit' : ''}">
-      <span class="model-name">${esc(m)}</span>
-      <span class="${cls}">${v}${disagrees ? ' *' : ''}</span>
+    const dis = v !== post.reddit;
+    return `<div class="model-cell ${dis ? 'disagrees' : ''}">
+      <span class="mname">${esc(m)}</span>
+      <span class="mverdict ${v.toLowerCase()}">${v}</span>
+      ${dis ? '<span class="disagree-star" title="Disagrees with Reddit">✦</span>' : ''}
     </div>`;
   }).filter(Boolean).join('');
 }
 
-function switchCondition(idx, cond, ev) {
+function renderFlips(p) {
+  const entries = Object.entries(p.sycDetails);
+  return `<div class="flips-section">
+    <div class="flips-box">
+      <div class="flips-title">
+        <svg viewBox="0 0 16 16"><path d="M8 1l2 3H6zM8 15l-2-3h4zM1 8l3-2v4zM15 8l-3 2V6z"/></svg>
+        ${entries.length} Model${entries.length > 1 ? 's' : ''} Flipped with Framing
+      </div>
+      ${entries.map(([m, d]) => {
+        return `<div class="flip-row">
+          <span class="flip-model">${esc(m)}</span>
+          <span class="flip-arrow">
+            <span class="v-nta">NTA</span>
+            <span class="arrow-icon">&rarr;</span>
+            <span class="v-yta">YTA</span>
+          </span>
+          <span class="flip-ctx">when framing changes</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderResponses(p) {
+  return `<div class="responses-section">
+    <div class="narrative-label" style="margin-bottom:8px">
+      <svg viewBox="0 0 16 16"><path d="M2 2h12v9H5l-3 3V2z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      AI Responses (base condition)
+    </div>
+    ${Object.entries(p.responses).map(([m, r]) => {
+      const cls = m === 'Claude' ? 'claude' : 'gpt';
+      const letter = m === 'Claude' ? 'C' : 'G';
+      return `<div class="response-card">
+        <div class="response-header">
+          <div class="response-model-icon ${cls}">${letter}</div>
+          <span class="response-model-name">${esc(m)}</span>
+        </div>
+        <div class="response-body">${esc(r)}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function switchCond(idx, cond, ev) {
   ev.stopPropagation();
   activeCondition[idx] = cond;
   const post = filtered[idx];
@@ -422,14 +992,17 @@ function switchCondition(idx, cond, ev) {
   document.getElementById(`grid-${idx}`).innerHTML = renderGrid(post, cond);
 }
 
-function togglePost(idx) {
-  document.getElementById(`body-${idx}`).classList.toggle('open');
+function toggle(idx) {
+  const card = document.getElementById(`post-${idx}`);
+  const body = document.getElementById(`body-${idx}`);
+  card.classList.toggle('expanded');
+  body.classList.toggle('open');
 }
 
-function changePage(delta) {
-  page += delta;
+function nav(d) {
+  page += d;
   renderPage();
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function esc(s) {

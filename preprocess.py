@@ -170,17 +170,17 @@ def main():
                         if nta_ctx == 'NTA' or yta_ctx == 'YTA':
                             syc_score += 0.5
 
-            # Collect open-ended responses
+            # Collect full open-ended responses (no truncation)
             responses = {}
             for model in RESPONSE_MODELS:
                 col = f'{model}_openended_base'
                 val = row.get(col, '')
                 if val and len(val) > 20:
-                    responses[model] = val[:500] + ('...' if len(val) > 500 else '')
+                    responses[model] = val
 
             post = {
                 'id': i,
-                'narrative': narrative[:1500] + ('...' if len(narrative) > 1500 else ''),
+                'narrative': narrative,
                 'reddit': reddit_verdict,
                 'judgments': judgments,
                 'sycScore': round(syc_score, 1),

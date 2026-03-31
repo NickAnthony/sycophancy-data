@@ -3,3 +3,5 @@ AITA_endorsement_results_fixed.csv
 __pycache__/
 *.pyc
 .DS_Store
+
+.env

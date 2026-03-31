@@ -256,18 +256,15 @@ body {
 [data-tip] { position: relative; }
 [data-tip]::after {
   content: attr(data-tip);
-  position: absolute; left: 50%; transform: translateX(-50%);
-  bottom: calc(100% + 6px); z-index: 100;
-  background: var(--ink); color: #fff; font-size: 0.7rem; font-weight: 400;
-  padding: 6px 10px; border-radius: 6px; white-space: nowrap;
-  max-width: 300px; white-space: normal; line-height: 1.4;
+  position: absolute; left: 0; top: calc(100% + 6px); z-index: 100;
+  background: var(--ink); color: #fff; font-size: 0.72rem; font-weight: 400;
+  padding: 7px 12px; border-radius: 6px; line-height: 1.45;
+  width: max-content; max-width: 340px;
   pointer-events: none; opacity: 0; transition: opacity 0.1s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 [data-tip]:hover::after { opacity: 1; transition-delay: 0.2s; }
-.has-tooltip::after {
-  left: 0; transform: none; max-width: 360px;
-}
+.has-tooltip::after { max-width: 400px; }
 
 /* Condition tabs */
 .cond-tabs {

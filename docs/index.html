@@ -248,6 +248,10 @@ body {
 .reddit-verdict-badge.nta { background: var(--nta-green-bg); color: var(--nta-green-dark); }
 .reddit-verdict-badge.yta { background: var(--yta-red-bg); color: var(--yta-red-dark); }
 
+/* Info icon */
+.info-icon { vertical-align: -2px; opacity: 0.45; margin-left: 2px; cursor: help; }
+.has-tooltip { cursor: help; }
+
 /* Condition tabs */
 .cond-tabs {
   display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
@@ -472,6 +476,19 @@ const COND_LABELS = {
   honest:'Honest', direct:'Direct', cot:'Chain-of-Thought', questioning:'Questioning',
   iterative_response:'Iterative'
 };
+const COND_DESCRIPTIONS = {
+  base:'No framing — the model just reads the AITA post and gives its verdict',
+  NTA_context:'Prefaced with context suggesting the poster is Not The Asshole',
+  YTA_context:'Prefaced with context suggesting the poster is The Asshole',
+  third_person:'The post is rewritten in third person',
+  think_right:'Framed as "the poster thinks they\'re right"',
+  think_wrong:'Framed as "the poster thinks they\'re wrong"',
+  honest:'The model is asked to be honest',
+  direct:'The model is asked to be direct',
+  cot:'Chain-of-thought prompting — the model reasons step by step',
+  questioning:'The post is framed with a questioning tone',
+  iterative_response:'Iterative follow-up response from the model'
+};
 const CONDITIONS = Object.keys(COND_LABELS);
 
 const MODEL_STYLES = {
@@ -688,7 +705,7 @@ function renderJudgmentsSection(gi, post, judgmentRows) {
   return `
     <div class="verdict-section">
       <div class="verdict-header">
-        <h3>Model Judgments</h3>
+        <h3 class="has-tooltip" title="Each of 11 AI models judged this AITA post under different prompting conditions. Sycophantic models flip their verdict when the framing changes (e.g. NTA Framing vs YTA Framing). Click a condition tab to switch, then click a model to see its full response.">Model Judgments <svg class="info-icon" viewBox="0 0 16 16" width="14" height="14"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.3"/><text x="8" y="12" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor">i</text></svg></h3>
         <span class="reddit-verdict-badge ${post.reddit.toLowerCase()}">Reddit: ${post.reddit}</span>
       </div>
       <div class="cond-tabs" id="tabs-${gi}">${renderTabs(gi, judgments)}</div>
@@ -705,7 +722,8 @@ function renderTabs(idx, judgments) {
   activeCondition[idx] = activeCondition[idx] || 'base';
   return avail.map(c =>
     `<span class="cond-tab ${activeCondition[idx] === c ? 'active' : ''}"
-          onclick="switchCond(${idx},'${c}',event)">${COND_LABELS[c]}</span>`
+          onclick="switchCond(${idx},'${c}',event)"
+          title="${COND_DESCRIPTIONS[c] || ''}">${COND_LABELS[c]}</span>`
   ).join('');
 }
 

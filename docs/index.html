@@ -273,9 +273,12 @@ body {
   padding: 8px 12px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--warm-white);
   font-size: 0.78rem; min-width: 160px;
-  transition: border-color 0.15s;
+  transition: all 0.15s; cursor: pointer;
 }
+.model-cell:hover { box-shadow: var(--shadow-sm); transform: translateY(-1px); }
 .model-cell.disagrees { border-color: var(--syc-amber); background: var(--syc-amber-bg); }
+.model-cell.selected { border-color: var(--orangered); box-shadow: 0 0 0 2px var(--orangered-soft); }
+.model-cell.selected.disagrees { border-color: var(--orangered); }
 .mname { font-weight: 500; color: var(--ink-light); flex: 1; }
 .mverdict { font-weight: 700; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
 .mverdict.nta { color: var(--nta-green-dark); }
@@ -451,6 +454,8 @@ let page = 0;
 let activeCondition = {};
 // Cache for loaded judgments: postId -> [{model, condition, verdict, binary_verdict, response}]
 const judgmentCache = new Map();
+// Track selected model per post card index
+const activeModel = {};
 
 const COND_LABELS = {
   base:'Base', NTA_context:'NTA Framing', YTA_context:'YTA Framing',
@@ -662,6 +667,12 @@ function renderJudgmentsSection(gi, post, judgmentRows) {
   const judgments = buildJudgmentsMap(judgmentRows);
   const cond = activeCondition[gi] || 'base';
 
+  // Auto-select first model with a response if none selected
+  if (!activeModel[gi]) {
+    const firstWithResponse = judgmentRows.find(j => j.condition === cond && j.response);
+    if (firstWithResponse) activeModel[gi] = firstWithResponse.model;
+  }
+
   // Get responses for current condition
   const responses = judgmentRows.filter(j => j.condition === cond && j.response);
 
@@ -672,10 +683,10 @@ function renderJudgmentsSection(gi, post, judgmentRows) {
         <span class="reddit-verdict-badge ${post.reddit.toLowerCase()}">Reddit: ${post.reddit}</span>
       </div>
       <div class="cond-tabs" id="tabs-${gi}">${renderTabs(gi, judgments)}</div>
-      <div class="model-grid" id="grid-${gi}">${renderGrid(judgments, post.reddit, cond)}</div>
+      <div class="model-grid" id="grid-${gi}">${renderGrid(gi, judgments, post.reddit, cond)}</div>
     </div>
     <div class="responses-section" id="responses-${gi}">
-      ${renderResponses(responses, cond)}
+      ${renderResponses(gi, responses, cond)}
     </div>`;
 }
 
@@ -689,12 +700,15 @@ function renderTabs(idx, judgments) {
   ).join('');
 }
 
-function renderGrid(judgments, redditVerdict, cond) {
+function renderGrid(gi, judgments, redditVerdict, cond) {
+  const sel = activeModel[gi];
   return Object.keys(judgments).sort().map(m => {
     const v = judgments[m][cond];
     if (v == null) return '';
     const dis = v !== redditVerdict;
-    return `<div class="model-cell ${dis ? 'disagrees' : ''}">
+    const selected = sel === m;
+    return `<div class="model-cell ${dis ? 'disagrees' : ''} ${selected ? 'selected' : ''}"
+                onclick="selectModel(${gi},'${m}',event)">
       <span class="mname">${esc(m)}</span>
       <span class="mverdict ${v.toLowerCase()}">${v}</span>
       ${dis ? '<span class="disagree-star" title="Disagrees with Reddit">&#10022;</span>' : ''}
@@ -702,26 +716,48 @@ function renderGrid(judgments, redditVerdict, cond) {
   }).filter(Boolean).join('');
 }
 
-function renderResponses(responses, cond) {
-  if (!responses.length) {
-    return `<div class="response-none">No open-ended responses available for ${COND_LABELS[cond] || cond} condition.</div>`;
+function renderResponses(gi, responses, cond) {
+  const sel = activeModel[gi];
+  // If a model is selected, show only that model's response
+  const toShow = sel ? responses.filter(j => j.model === sel) : [];
+
+  if (!sel) {
+    return `<div class="response-none">Click a model above to see its response.</div>`;
+  }
+  if (!toShow.length) {
+    return `<div class="response-none">No open-ended response from ${sel} for ${COND_LABELS[cond] || cond} condition.</div>`;
   }
 
+  const j = toShow[0];
+  const style = MODEL_STYLES[j.model] || { cls: 'default', letter: j.model[0] };
   return `
     <div class="narrative-label" style="margin-bottom:8px">
       <svg viewBox="0 0 16 16"><path d="M2 2h12v9H5l-3 3V2z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-      AI Responses (${COND_LABELS[cond] || cond} condition)
+      AI Response (${COND_LABELS[cond] || cond} condition)
     </div>
-    ${responses.map(j => {
-      const style = MODEL_STYLES[j.model] || { cls: 'default', letter: j.model[0] };
-      return `<div class="response-card">
-        <div class="response-header">
-          <div class="response-model-icon ${style.cls}">${style.letter}</div>
-          <span class="response-model-name">${esc(j.model)}</span>
-        </div>
-        <div class="response-body">${esc(j.response)}</div>
-      </div>`;
-    }).join('')}`;
+    <div class="response-card">
+      <div class="response-header">
+        <div class="response-model-icon ${style.cls}">${style.letter}</div>
+        <span class="response-model-name">${esc(j.model)}</span>
+      </div>
+      <div class="response-body">${esc(j.response)}</div>
+    </div>`;
+}
+
+async function selectModel(idx, model, ev) {
+  ev.stopPropagation();
+  activeModel[idx] = activeModel[idx] === model ? null : model; // toggle
+  const post = filtered[idx];
+  const judgmentRows = await loadJudgments(post.id);
+  const judgments = buildJudgmentsMap(judgmentRows);
+  const cond = activeCondition[idx] || 'base';
+
+  // Re-render grid to update selected highlight
+  document.getElementById(`grid-${idx}`).innerHTML = renderGrid(idx, judgments, post.reddit, cond);
+
+  // Update response
+  const responses = judgmentRows.filter(j => j.condition === cond && j.response);
+  document.getElementById(`responses-${idx}`).innerHTML = renderResponses(idx, responses, cond);
 }
 
 async function switchCond(idx, cond, ev) {
@@ -732,11 +768,11 @@ async function switchCond(idx, cond, ev) {
   const judgments = buildJudgmentsMap(judgmentRows);
 
   document.getElementById(`tabs-${idx}`).innerHTML = renderTabs(idx, judgments);
-  document.getElementById(`grid-${idx}`).innerHTML = renderGrid(judgments, post.reddit, cond);
+  document.getElementById(`grid-${idx}`).innerHTML = renderGrid(idx, judgments, post.reddit, cond);
 
-  // Update responses for new condition
+  // Update response for new condition (keep selected model)
   const responses = judgmentRows.filter(j => j.condition === cond && j.response);
-  document.getElementById(`responses-${idx}`).innerHTML = renderResponses(responses, cond);
+  document.getElementById(`responses-${idx}`).innerHTML = renderResponses(idx, responses, cond);
 }
 
 async function toggle(idx) {

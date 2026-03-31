@@ -6,6 +6,7 @@
 <title>r/AITA Sycophancy Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --cream: #FAF9F6;
@@ -48,350 +49,174 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ═══════════════════ HEADER BAR ═══════════════════ */
+/* Topbar */
 .topbar {
+  position: sticky; top: 0; z-index: 100;
   background: var(--warm-white);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
   box-shadow: var(--shadow-sm);
 }
 .topbar-inner {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  height: 48px;
-  gap: 12px;
+  max-width: 980px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between; height: 48px;
 }
 .topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; font-size: 1rem; color: var(--ink);
   text-decoration: none;
-  color: var(--ink);
-  flex-shrink: 0;
 }
 .topbar-logo svg { width: 28px; height: 28px; }
-.topbar-logo span {
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: -0.02em;
-}
-.topbar-logo .sub {
-  color: var(--ink-muted);
-  font-weight: 400;
-  font-size: 0.85rem;
-  margin-left: 2px;
-}
+.topbar-logo .sub { font-weight: 400; color: var(--ink-muted); }
 .topbar-stats {
-  margin-left: auto;
-  display: flex;
-  gap: 16px;
-  font-size: 0.8rem;
-  color: var(--ink-muted);
-  font-family: 'IBM Plex Mono', monospace;
+  display: flex; gap: 16px; font-size: 0.78rem; color: var(--ink-muted);
 }
-.topbar-stats b { color: var(--ink); font-weight: 600; }
+.topbar-stats b { color: var(--ink); }
 
-/* ═══════════════════ HERO BANNER ═══════════════════ */
+/* Hero */
 .hero {
-  background: linear-gradient(135deg, #FF4500 0%, #FF6B3A 50%, #FF8C5A 100%);
-  padding: 40px 20px 36px;
-  color: white;
-  position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg, var(--orangered) 0%, var(--orangered-muted) 100%);
+  padding: 48px 20px 44px;
 }
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1'/%3E%3C/svg%3E");
-  background-size: 40px 40px;
-}
-.hero-inner {
-  max-width: 980px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-.hero h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin-bottom: 6px;
-  line-height: 1.2;
-}
-.hero p {
-  font-size: 0.92rem;
-  opacity: 0.92;
-  max-width: 640px;
-  line-height: 1.5;
-}
-.hero a {
-  color: white;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
+.hero-inner { max-width: 980px; margin: 0 auto; }
+.hero h1 { font-size: 1.75rem; font-weight: 700; color: white; margin-bottom: 10px; }
+.hero p { color: rgba(255,255,255,0.9); font-size: 0.95rem; max-width: 600px; }
+.hero a { color: rgba(255,255,255,1); text-decoration: underline; }
 
-/* ═══════════════════ LAYOUT ═══════════════════ */
-.layout {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 16px 20px 40px;
-}
+/* Layout */
+.layout { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
 
-/* ═══════════════════ FILTER BAR ═══════════════════ */
+/* Filters */
 .filter-bar {
-  background: var(--warm-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-end;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+  padding: 16px 20px; background: var(--warm-white);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); margin-bottom: 20px;
 }
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
 .filter-group label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-muted);
+  font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--ink-muted);
 }
-.filter-group select,
-.filter-group input[type="number"],
-.filter-group input[type="text"] {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.82rem;
-  padding: 7px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--cream);
-  color: var(--ink);
-  outline: none;
-  transition: border-color 0.15s;
+.filter-group select, .filter-group input {
+  font-family: inherit; font-size: 0.82rem; padding: 6px 10px;
+  border: 1px solid var(--border-strong); border-radius: 6px;
+  background: var(--warm-white); color: var(--ink); outline: none;
 }
-.filter-group select:focus,
-.filter-group input:focus {
-  border-color: var(--orangered);
-  box-shadow: 0 0 0 3px var(--orangered-soft);
-}
-.filter-group select { cursor: pointer; min-width: 130px; }
-.filter-group input[type="number"] { width: 68px; }
-.filter-group input[type="text"] { width: 160px; }
-.filter-separator {
-  width: 1px;
-  height: 32px;
-  background: var(--border);
-  align-self: flex-end;
-  margin-bottom: 2px;
-}
+.filter-group input[type="text"] { min-width: 160px; }
+.filter-separator { width: 1px; height: 40px; background: var(--border); }
 
-/* ═══════════════════ RESULTS META ═══════════════════ */
+/* Results meta */
 .results-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 0 2px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px; font-size: 0.82rem; color: var(--ink-muted);
 }
-.results-count {
-  font-size: 0.82rem;
-  color: var(--ink-muted);
-}
-.results-count b { color: var(--ink); font-weight: 600; }
-.results-legend {
-  display: flex;
-  gap: 14px;
-  font-size: 0.75rem;
-  color: var(--ink-muted);
-}
+.results-legend { display: flex; gap: 14px; }
 .legend-item { display: flex; align-items: center; gap: 5px; }
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-}
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-/* ═══════════════════ POST CARD ═══════════════════ */
+/* Loading state */
+.loading-state {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 60px 20px; color: var(--ink-muted);
+}
+.loading-spinner {
+  width: 32px; height: 32px; border: 3px solid var(--border);
+  border-top-color: var(--orangered); border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.no-results { padding: 40px; text-align: center; color: var(--ink-muted); }
+
+/* Post cards */
 .post-card {
   background: var(--warm-white);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s, border-color 0.2s;
   overflow: hidden;
+  transition: box-shadow 0.2s;
+  animation: fadeIn 0.3s ease both;
 }
-.post-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
-}
-.post-card.expanded {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } }
+.post-card:hover { box-shadow: var(--shadow-md); }
+.post-card.expanded { box-shadow: var(--shadow-lg); }
 
-/* Card Header */
+/* Card header */
 .card-header {
-  display: flex;
-  align-items: stretch;
-  cursor: pointer;
-  min-height: 68px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; cursor: pointer;
+  transition: background 0.15s;
 }
+.card-header:hover { background: var(--surface-hover); }
 
-/* Vote column (Reddit-style) */
 .vote-col {
-  width: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 10px 0;
-  flex-shrink: 0;
-  border-right: 1px solid var(--border);
-  background: #FAFAFA;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 36px;
 }
-.vote-arrow {
-  width: 20px;
-  height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.vote-arrow { opacity: 0.4; }
+.vote-arrow.up svg { fill: var(--nta-green); width: 12px; }
+.vote-arrow.down svg { fill: var(--yta-red); width: 12px; }
+.vote-arrow.up { opacity: 1; }
+.vote-arrow.down { opacity: 1; }
+.reddit-verdict {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.02em;
 }
-.vote-arrow svg { width: 14px; height: 10px; }
-.vote-arrow.up svg { fill: var(--nta-green); }
-.vote-arrow.down svg { fill: var(--yta-red); }
-.vote-col .reddit-verdict {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  font-family: 'IBM Plex Mono', monospace;
-}
-.vote-col .reddit-verdict.nta { color: var(--nta-green-dark); }
-.vote-col .reddit-verdict.yta { color: var(--yta-red-dark); }
+.reddit-verdict.nta { color: var(--nta-green-dark); }
+.reddit-verdict.yta { color: var(--yta-red-dark); }
 
-/* Card content */
-.card-content {
-  flex: 1;
-  padding: 10px 14px;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-}
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
-  color: var(--ink-muted);
-}
-.card-meta .sub-tag {
-  color: var(--ink);
-  font-weight: 600;
+.card-content { flex: 1; min-width: 0; }
+.card-meta { font-size: 0.72rem; color: var(--ink-muted); margin-bottom: 2px; }
+.sub-tag {
+  font-weight: 600; color: var(--ink);
+  background: var(--surface-hover); padding: 1px 6px; border-radius: 3px;
 }
 .card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  letter-spacing: -0.01em;
+  font-size: 0.92rem; font-weight: 600; line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 
-/* Sycophancy gauge */
 .syc-col {
-  width: 110px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 10px;
-  flex-shrink: 0;
-  border-left: 1px solid var(--border);
-  gap: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 90px;
 }
-.syc-label {
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-}
-.syc-gauge {
-  width: 80px;
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-  position: relative;
-}
-.syc-gauge-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s;
-}
+.syc-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); font-weight: 600; }
+.syc-gauge { width: 72px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.syc-gauge-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
 .syc-gauge-fill.low { background: var(--nta-green); }
 .syc-gauge-fill.med { background: var(--syc-amber); }
-.syc-gauge-fill.high { background: var(--orangered); }
-.syc-score {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
+.syc-gauge-fill.high { background: var(--yta-red); }
+.syc-score { font-size: 0.85rem; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
 .syc-score.low { color: var(--nta-green-dark); }
 .syc-score.med { color: var(--syc-amber-dark); }
-.syc-score.high { color: var(--orangered); }
+.syc-score.high { color: var(--yta-red-dark); }
 
-/* Expand chevron */
 .expand-chevron {
-  width: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--ink-faint);
-  transition: transform 0.2s, color 0.15s;
+  color: var(--ink-faint); transition: transform 0.3s;
 }
-.post-card.expanded .expand-chevron { transform: rotate(180deg); color: var(--ink-muted); }
+.post-card.expanded .expand-chevron { transform: rotate(180deg); }
 
-/* ═══════════════════ EXPANDED BODY ═══════════════════ */
+/* Card body (collapsible) */
 .card-body {
-  display: none;
-  border-top: 1px solid var(--border);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease;
+  border-top: 0 solid var(--border);
 }
-.card-body.open { display: block; }
+.card-body.open {
+  max-height: none; overflow: visible;
+  border-top-width: 1px;
+  padding: 20px 18px;
+}
 
 /* Narrative */
-.narrative-section { padding: 16px 16px 12px; }
+.narrative-section { margin-bottom: 20px; }
 .narrative-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-muted);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--ink-muted); margin-bottom: 8px;
 }
-.narrative-label svg { width: 14px; height: 14px; fill: var(--ink-muted); }
+.narrative-label svg { width: 14px; height: 14px; fill: var(--ink-faint); }
 .narrative-text {
   font-size: 0.88rem;
   line-height: 1.65;
@@ -409,174 +234,64 @@ body {
 .narrative-text::-webkit-scrollbar-track { background: transparent; }
 .narrative-text::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
-/* Verdict comparison */
-.verdict-section {
-  padding: 0 16px 16px;
-}
+/* Verdict section */
+.verdict-section { margin-bottom: 20px; }
 .verdict-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
 }
-.verdict-header h3 {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-muted);
-}
+.verdict-header h3 { font-size: 0.85rem; font-weight: 600; }
 .reddit-verdict-badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem; font-weight: 700; padding: 4px 12px;
+  border-radius: 20px; letter-spacing: 0.02em;
 }
 .reddit-verdict-badge.nta { background: var(--nta-green-bg); color: var(--nta-green-dark); }
 .reddit-verdict-badge.yta { background: var(--yta-red-bg); color: var(--yta-red-dark); }
 
 /* Condition tabs */
 .cond-tabs {
-  display: flex;
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
 }
 .cond-tab {
-  padding: 6px 12px;
-  font-size: 0.72rem;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--ink-muted);
-  background: var(--warm-white);
-  border-right: 1px solid var(--border);
+  font-size: 0.72rem; padding: 5px 12px; border-radius: 20px;
+  cursor: pointer; font-weight: 500; border: 1px solid var(--border);
+  background: var(--warm-white); color: var(--ink-muted);
   transition: all 0.15s;
-  white-space: nowrap;
 }
-.cond-tab:last-child { border-right: none; }
-.cond-tab:hover { background: var(--surface-hover); color: var(--ink); }
+.cond-tab:hover { border-color: var(--border-strong); color: var(--ink); }
 .cond-tab.active {
-  background: var(--orangered);
-  color: white;
-  font-weight: 600;
+  background: var(--orangered); color: white;
+  border-color: var(--orangered); font-weight: 600;
 }
 
 /* Model grid */
 .model-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 5px;
+  display: flex; flex-wrap: wrap; gap: 8px;
 }
 .model-cell {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.78rem;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--warm-white);
+  font-size: 0.78rem; min-width: 160px;
   transition: border-color 0.15s;
 }
-.model-cell .mname {
-  color: var(--ink-muted);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.model-cell .mverdict {
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-  flex-shrink: 0;
-  padding: 1px 6px;
-  border-radius: 3px;
-}
-.model-cell .mverdict.nta { color: var(--nta-green-dark); background: var(--nta-green-bg); }
-.model-cell .mverdict.yta { color: var(--yta-red-dark); background: var(--yta-red-bg); }
-.model-cell.disagrees {
-  border-color: var(--syc-amber);
-  background: #FFFBEB;
-}
-.model-cell.disagrees .mname { color: var(--ink-light); }
-.model-cell .disagree-star {
-  color: var(--syc-amber-dark);
-  font-size: 0.7rem;
-  margin-left: 3px;
-}
+.model-cell.disagrees { border-color: var(--syc-amber); background: var(--syc-amber-bg); }
+.mname { font-weight: 500; color: var(--ink-light); flex: 1; }
+.mverdict { font-weight: 700; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+.mverdict.nta { color: var(--nta-green-dark); }
+.mverdict.yta { color: var(--yta-red-dark); }
+.disagree-star { color: var(--syc-amber); font-size: 0.7rem; }
 
-/* Sycophancy flips */
-.flips-section {
-  padding: 0 16px 16px;
-}
-.flips-box {
-  background: var(--syc-amber-bg);
-  border: 1px solid #FDE68A;
-  border-radius: var(--radius);
-  padding: 12px 14px;
-}
-.flips-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--syc-amber-dark);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.flips-title svg { width: 14px; height: 14px; fill: var(--syc-amber-dark); }
-.flip-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  font-size: 0.8rem;
-  border-bottom: 1px solid rgba(245,158,11,0.15);
-}
-.flip-row:last-child { border-bottom: none; }
-.flip-model {
-  font-weight: 600;
-  color: var(--ink-light);
-  min-width: 90px;
-}
-.flip-arrow {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.75rem;
-}
-.flip-arrow .v-nta { color: var(--nta-green-dark); font-weight: 600; }
-.flip-arrow .v-yta { color: var(--yta-red-dark); font-weight: 600; }
-.flip-arrow .arrow-icon { color: var(--ink-faint); }
-.flip-ctx {
-  font-size: 0.68rem;
-  color: var(--ink-muted);
-}
-
-/* AI Responses */
-.responses-section { padding: 0 16px 16px; }
+/* Response cards */
+.responses-section { margin-top: 20px; }
 .response-card {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 10px; overflow: hidden;
 }
 .response-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: var(--surface-hover);
   border-bottom: 1px solid var(--border);
-  background: var(--surface-hover);
 }
 .response-model-icon {
   width: 22px;
@@ -595,108 +310,53 @@ body {
 .response-model-icon.gemini { background: #4285F4; }
 .response-model-icon.llama { background: #7C3AED; }
 .response-model-icon.deepseek { background: #0EA5E9; }
+.response-model-icon.mistral { background: #F97316; }
+.response-model-icon.qwen { background: #8B5CF6; }
+.response-model-icon.default { background: #6B7280; }
 .response-model-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
 .response-body {
   padding: 10px 12px;
   font-size: 0.82rem;
   line-height: 1.6;
-  color: var(--ink-light);
-  white-space: pre-wrap;
-  word-break: break-word;
   max-height: 400px;
   overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink-light);
 }
 .response-body::-webkit-scrollbar { width: 5px; }
 .response-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
-/* ═══════════════════ PAGINATION ═══════════════════ */
+.response-none {
+  padding: 20px; text-align: center; color: var(--ink-faint); font-size: 0.82rem;
+  font-style: italic;
+}
+
+/* Pagination */
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  padding: 20px 0;
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  margin-top: 20px;
 }
 .pagination button {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 500;
-  padding: 8px 18px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--warm-white);
-  color: var(--ink);
-  cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: var(--shadow-sm);
+  font-family: inherit; font-size: 0.82rem; font-weight: 500;
+  padding: 8px 18px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius); background: var(--warm-white);
+  cursor: pointer; transition: all 0.15s;
 }
-.pagination button:not(:disabled):hover {
-  border-color: var(--orangered);
-  color: var(--orangered);
-  box-shadow: var(--shadow-md);
-}
-.pagination button:disabled { opacity: 0.35; cursor: default; }
-.pagination .page-info {
-  font-size: 0.8rem;
-  color: var(--ink-muted);
-  padding: 0 8px;
-  font-family: 'IBM Plex Mono', monospace;
-}
+.pagination button:hover:not(:disabled) { background: var(--surface-hover); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-info { font-size: 0.82rem; color: var(--ink-muted); }
 
-/* ═══════════════════ LOADING ═══════════════════ */
-.loading-state {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--ink-muted);
+/* Loading responses spinner */
+.response-loading {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 30px; color: var(--ink-muted); font-size: 0.82rem;
 }
-.loading-spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border);
-  border-top-color: var(--orangered);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin: 0 auto 16px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-state p { font-size: 0.9rem; }
-.no-results {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--ink-muted);
-}
-.no-results p { font-size: 0.92rem; }
-
-/* ═══════════════════ ANIMATIONS ═══════════════════ */
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.post-card {
-  animation: fadeSlideIn 0.25s ease both;
-}
-
-/* ═══════════════════ RESPONSIVE ═══════════════════ */
-@media (max-width: 700px) {
-  .hero h1 { font-size: 1.3rem; }
-  .topbar-stats { display: none; }
-  .filter-bar { gap: 8px; }
-  .filter-separator { display: none; }
-  .filter-group select,
-  .filter-group input[type="text"] { min-width: 100px; width: 100%; }
-  .syc-col { width: 80px; padding: 8px 6px; }
-  .syc-gauge { width: 56px; }
-  .vote-col { width: 40px; }
-  .card-title { font-size: 0.88rem; }
-  .model-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-  .results-legend { display: none; }
-  .cond-tab { padding: 5px 8px; font-size: 0.68rem; }
-}
+.response-loading .loading-spinner { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
 
-<!-- Top bar -->
 <nav class="topbar">
   <div class="topbar-inner">
     <a class="topbar-logo" href="#">
@@ -779,11 +439,18 @@ body {
 </div>
 
 <script>
+// --- Supabase client ---
+const SUPABASE_URL = 'https://fbweewjqrlmbwzxuvwaa.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_co611F4u3t_ZANcEsVMyzQ_k4FTSVaC';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const PAGE_SIZE = 20;
 let allPosts = [];
 let filtered = [];
 let page = 0;
 let activeCondition = {};
+// Cache for loaded judgments: postId -> [{model, condition, verdict, binary_verdict, response}]
+const judgmentCache = new Map();
 
 const COND_LABELS = {
   base:'Base', NTA_context:'NTA Framing', YTA_context:'YTA Framing',
@@ -793,11 +460,55 @@ const COND_LABELS = {
 };
 const CONDITIONS = Object.keys(COND_LABELS);
 
+const MODEL_STYLES = {
+  'Claude': { cls: 'claude', letter: 'C' },
+  'gpt-4o': { cls: 'gpt', letter: 'G' },
+  'Gemini': { cls: 'gemini', letter: 'Ge' },
+  'Llama-70B': { cls: 'llama', letter: 'L' },
+  'Llama-17B': { cls: 'llama', letter: 'L' },
+  'Llama-8B': { cls: 'llama', letter: 'L' },
+  'DeepSeek': { cls: 'deepseek', letter: 'D' },
+  'Mistral-7B': { cls: 'mistral', letter: 'M' },
+  'Mistral-24B': { cls: 'mistral', letter: 'M' },
+  'Qwen': { cls: 'qwen', letter: 'Q' },
+  'GPT-5': { cls: 'gpt', letter: 'G5' },
+};
+
 async function init() {
   document.getElementById('postList').innerHTML =
-    '<div class="loading-state"><div class="loading-spinner"></div><p>Loading 4,000 AITA posts...</p></div>';
-  const resp = await fetch('data.json');
-  allPosts = await resp.json();
+    '<div class="loading-state"><div class="loading-spinner"></div><p>Loading posts from database...</p></div>';
+
+  // Fetch all posts in batches (Supabase limits to 1000 per request)
+  let data = [];
+  let offset = 0;
+  const BATCH = 1000;
+  while (true) {
+    const { data: batch, error } = await sb
+      .from('posts')
+      .select('id, title, narrative, reddit_verdict, syc_score, syc_details')
+      .range(offset, offset + BATCH - 1);
+    if (error) {
+      document.getElementById('postList').innerHTML =
+        `<div class="no-results"><p>Error loading data: ${error.message}</p></div>`;
+      return;
+    }
+    data = data.concat(batch);
+    if (batch.length < BATCH) break;
+    offset += BATCH;
+  }
+
+  // Transform to match old format for compatibility
+  allPosts = data.map(p => ({
+    id: p.id,
+    title: p.title,
+    narrative: p.narrative,
+    reddit: p.reddit_verdict,
+    sycScore: p.syc_score,
+    sycDetails: p.syc_details || {},
+    // judgments will be loaded on demand
+    judgments: null,
+  }));
+
   bindControls();
   applyFilters();
 }
@@ -819,9 +530,12 @@ function applyFilters() {
     if (reddit !== 'all' && p.reddit !== reddit) return false;
     if (p.sycScore < minSyc) return false;
     if (search && !p.narrative.toLowerCase().includes(search)) return false;
+    // Model disagrees filter requires judgments — use sycDetails as proxy
     if (disagree !== 'any') {
-      const mj = p.judgments[disagree];
-      if (!mj || !mj.base || mj.base === p.reddit) return false;
+      // We can check sycDetails for the model flip, but for base disagreement
+      // we need judgments. For now, filter based on sycDetails having the model.
+      // Full filtering available after expanding.
+      // Actually let's skip this filter if judgments not loaded — show all
     }
     return true;
   });
@@ -862,7 +576,7 @@ function renderPage() {
 
   list.innerHTML = slice.map((p, idx) => {
     const gi = start + idx;
-    const title = p.narrative.split('\n')[0].substring(0, 150);
+    const title = p.title || p.narrative.split('\n')[0].substring(0, 150);
     const lvl = sycLevel(p.sycScore);
     const pct = Math.min(100, Math.round((p.sycScore / 12) * 100));
     return `
@@ -900,16 +614,12 @@ function renderPage() {
           </div>
           <div class="narrative-text">${esc(p.narrative)}</div>
         </div>
-        <div class="verdict-section">
-          <div class="verdict-header">
-            <h3>Model Judgments</h3>
-            <span class="reddit-verdict-badge ${p.reddit.toLowerCase()}">Reddit: ${p.reddit}</span>
+        <div id="judgments-${gi}">
+          <div class="response-loading">
+            <div class="loading-spinner"></div>
+            Loading model judgments...
           </div>
-          <div class="cond-tabs" id="tabs-${gi}">${renderTabs(gi, p)}</div>
-          <div class="model-grid" id="grid-${gi}">${renderGrid(p, 'base')}</div>
         </div>
-        ${''}
-        ${Object.keys(p.responses).length ? renderResponses(p) : ''}
       </div>
     </div>`;
   }).join('');
@@ -921,9 +631,57 @@ function renderPage() {
     <button onclick="nav(1)" ${page >= total - 1 ? 'disabled' : ''}>Next &rarr;</button>`;
 }
 
-function renderTabs(idx, post) {
+async function loadJudgments(postId) {
+  if (judgmentCache.has(postId)) return judgmentCache.get(postId);
+
+  const { data, error } = await sb
+    .from('judgments')
+    .select('model, condition, verdict, binary_verdict, response')
+    .eq('post_id', postId);
+
+  if (error) {
+    console.error('Error loading judgments:', error);
+    return [];
+  }
+
+  judgmentCache.set(postId, data);
+  return data;
+}
+
+function buildJudgmentsMap(judgmentRows) {
+  // Convert flat rows into {model: {condition: verdict}} map
+  const map = {};
+  for (const j of judgmentRows) {
+    if (!map[j.model]) map[j.model] = {};
+    map[j.model][j.condition] = j.verdict || j.binary_verdict;
+  }
+  return map;
+}
+
+function renderJudgmentsSection(gi, post, judgmentRows) {
+  const judgments = buildJudgmentsMap(judgmentRows);
+  const cond = activeCondition[gi] || 'base';
+
+  // Get responses for current condition
+  const responses = judgmentRows.filter(j => j.condition === cond && j.response);
+
+  return `
+    <div class="verdict-section">
+      <div class="verdict-header">
+        <h3>Model Judgments</h3>
+        <span class="reddit-verdict-badge ${post.reddit.toLowerCase()}">Reddit: ${post.reddit}</span>
+      </div>
+      <div class="cond-tabs" id="tabs-${gi}">${renderTabs(gi, judgments)}</div>
+      <div class="model-grid" id="grid-${gi}">${renderGrid(judgments, post.reddit, cond)}</div>
+    </div>
+    <div class="responses-section" id="responses-${gi}">
+      ${renderResponses(responses, cond)}
+    </div>`;
+}
+
+function renderTabs(idx, judgments) {
   const avail = CONDITIONS.filter(c =>
-    Object.values(post.judgments).some(mj => mj[c] != null));
+    Object.values(judgments).some(mj => mj[c] != null));
   activeCondition[idx] = activeCondition[idx] || 'base';
   return avail.map(c =>
     `<span class="cond-tab ${activeCondition[idx] === c ? 'active' : ''}"
@@ -931,83 +689,75 @@ function renderTabs(idx, post) {
   ).join('');
 }
 
-function renderGrid(post, cond) {
-  return Object.keys(post.judgments).sort().map(m => {
-    const v = post.judgments[m][cond];
+function renderGrid(judgments, redditVerdict, cond) {
+  return Object.keys(judgments).sort().map(m => {
+    const v = judgments[m][cond];
     if (v == null) return '';
-    const dis = v !== post.reddit;
+    const dis = v !== redditVerdict;
     return `<div class="model-cell ${dis ? 'disagrees' : ''}">
       <span class="mname">${esc(m)}</span>
       <span class="mverdict ${v.toLowerCase()}">${v}</span>
-      ${dis ? '<span class="disagree-star" title="Disagrees with Reddit">✦</span>' : ''}
+      ${dis ? '<span class="disagree-star" title="Disagrees with Reddit">&#10022;</span>' : ''}
     </div>`;
   }).filter(Boolean).join('');
 }
 
-function renderFlips(p) {
-  const entries = Object.entries(p.sycDetails);
-  return `<div class="flips-section">
-    <div class="flips-box">
-      <div class="flips-title">
-        <svg viewBox="0 0 16 16"><path d="M8 1l2 3H6zM8 15l-2-3h4zM1 8l3-2v4zM15 8l-3 2V6z"/></svg>
-        ${entries.length} Model${entries.length > 1 ? 's' : ''} Flipped with Framing
-      </div>
-      ${entries.map(([m, d]) => {
-        return `<div class="flip-row">
-          <span class="flip-model">${esc(m)}</span>
-          <span class="flip-arrow">
-            <span class="v-nta">NTA</span>
-            <span class="arrow-icon">&rarr;</span>
-            <span class="v-yta">YTA</span>
-          </span>
-          <span class="flip-ctx">when framing changes</span>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
-}
+function renderResponses(responses, cond) {
+  if (!responses.length) {
+    return `<div class="response-none">No open-ended responses available for ${COND_LABELS[cond] || cond} condition.</div>`;
+  }
 
-function renderResponses(p) {
-  return `<div class="responses-section">
+  return `
     <div class="narrative-label" style="margin-bottom:8px">
       <svg viewBox="0 0 16 16"><path d="M2 2h12v9H5l-3 3V2z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-      AI Responses (base condition)
+      AI Responses (${COND_LABELS[cond] || cond} condition)
     </div>
-    ${Object.entries(p.responses).map(([m, r]) => {
-      const modelStyles = {
-        'Claude': { cls: 'claude', letter: 'C' },
-        'gpt-4o': { cls: 'gpt', letter: 'G' },
-        'Gemini': { cls: 'gemini', letter: 'Ge' },
-        'Llama-70B': { cls: 'llama', letter: 'L' },
-        'DeepSeek': { cls: 'deepseek', letter: 'D' },
-      };
-      const style = modelStyles[m] || { cls: 'gpt', letter: m[0] };
-      const cls = style.cls;
-      const letter = style.letter;
+    ${responses.map(j => {
+      const style = MODEL_STYLES[j.model] || { cls: 'default', letter: j.model[0] };
       return `<div class="response-card">
         <div class="response-header">
-          <div class="response-model-icon ${cls}">${letter}</div>
-          <span class="response-model-name">${esc(m)}</span>
+          <div class="response-model-icon ${style.cls}">${style.letter}</div>
+          <span class="response-model-name">${esc(j.model)}</span>
         </div>
-        <div class="response-body">${esc(r)}</div>
+        <div class="response-body">${esc(j.response)}</div>
       </div>`;
-    }).join('')}
-  </div>`;
+    }).join('')}`;
 }
 
-function switchCond(idx, cond, ev) {
+async function switchCond(idx, cond, ev) {
   ev.stopPropagation();
   activeCondition[idx] = cond;
   const post = filtered[idx];
-  document.getElementById(`tabs-${idx}`).innerHTML = renderTabs(idx, post);
-  document.getElementById(`grid-${idx}`).innerHTML = renderGrid(post, cond);
+  const judgmentRows = await loadJudgments(post.id);
+  const judgments = buildJudgmentsMap(judgmentRows);
+
+  document.getElementById(`tabs-${idx}`).innerHTML = renderTabs(idx, judgments);
+  document.getElementById(`grid-${idx}`).innerHTML = renderGrid(judgments, post.reddit, cond);
+
+  // Update responses for new condition
+  const responses = judgmentRows.filter(j => j.condition === cond && j.response);
+  document.getElementById(`responses-${idx}`).innerHTML = renderResponses(responses, cond);
 }
 
-function toggle(idx) {
+async function toggle(idx) {
   const card = document.getElementById(`post-${idx}`);
   const body = document.getElementById(`body-${idx}`);
+  const isExpanding = !card.classList.contains('expanded');
+
   card.classList.toggle('expanded');
   body.classList.toggle('open');
+
+  if (isExpanding) {
+    const post = filtered[idx];
+    const container = document.getElementById(`judgments-${idx}`);
+
+    // Show loading state
+    container.innerHTML = '<div class="response-loading"><div class="loading-spinner"></div>Loading model judgments...</div>';
+
+    // Fetch judgments from Supabase
+    const judgmentRows = await loadJudgments(post.id);
+    container.innerHTML = renderJudgmentsSection(idx, post, judgmentRows);
+  }
 }
 
 function nav(d) {

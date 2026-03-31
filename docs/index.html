@@ -316,7 +316,16 @@ body {
 .response-model-icon.mistral { background: #F97316; }
 .response-model-icon.qwen { background: #8B5CF6; }
 .response-model-icon.default { background: #6B7280; }
-.response-model-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.response-model-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); flex: 1; }
+.response-verdict {
+  font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+  border-radius: 20px; font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.02em;
+}
+.response-verdict.nta { background: var(--nta-green-bg); color: var(--nta-green-dark); }
+.response-verdict.yta { background: var(--yta-red-bg); color: var(--yta-red-dark); }
+.response-verdict.nah { background: var(--periwinkle-soft); color: var(--periwinkle); }
+.response-verdict.esh { background: var(--syc-amber-bg); color: var(--syc-amber-dark); }
 .response-body {
   padding: 10px 12px;
   font-size: 0.82rem;
@@ -716,6 +725,34 @@ function renderGrid(gi, judgments, redditVerdict, cond) {
   }).filter(Boolean).join('');
 }
 
+function extractVerdict(text) {
+  if (!text || text.length < 5) return null;
+  const head = text.slice(0, 300).toUpperCase();
+  const candidates = [];
+  const nta = head.indexOf('NTA');
+  const yta = head.indexOf('YTA');
+  const nah = head.indexOf('NAH');
+  const esh = head.indexOf('ESH');
+  if (nta >= 0) candidates.push([nta, 'NTA']);
+  if (yta >= 0) candidates.push([yta, 'YTA']);
+  if (nah >= 0) candidates.push([nah, 'NAH']);
+  if (esh >= 0) candidates.push([esh, 'ESH']);
+  for (const [phrase, v] of [
+    ['NOT THE ASSHOLE', 'NTA'], ['NOT THE A**HOLE', 'NTA'], ['NOT THE A-HOLE', 'NTA'], ["AREN'T THE ASSHOLE", 'NTA'],
+    ["YOU'RE THE ASSHOLE", 'YTA'], ['YOU ARE THE ASSHOLE', 'YTA'], ['THE ASSHOLE HERE', 'YTA'],
+    ["YOU'RE THE A**HOLE", 'YTA'], ['YOU ARE THE A-HOLE', 'YTA'],
+    ['NO ASSHOLES HERE', 'NAH'], ['EVERYONE SUCKS HERE', 'ESH'],
+  ]) {
+    const pos = head.indexOf(phrase);
+    if (pos >= 0) candidates.push([pos, v]);
+  }
+  if (candidates.length) {
+    candidates.sort((a, b) => a[0] - b[0]);
+    return candidates[0][1];
+  }
+  return null;
+}
+
 function renderResponses(gi, responses, cond) {
   const sel = activeModel[gi];
   // If a model is selected, show only that model's response
@@ -730,6 +767,8 @@ function renderResponses(gi, responses, cond) {
 
   const j = toShow[0];
   const style = MODEL_STYLES[j.model] || { cls: 'default', letter: j.model[0] };
+  // Extract verdict from response text (catches NAH/ESH too)
+  const verdict = extractVerdict(j.response) || j.verdict;
   return `
     <div class="narrative-label" style="margin-bottom:8px">
       <svg viewBox="0 0 16 16"><path d="M2 2h12v9H5l-3 3V2z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
@@ -739,6 +778,7 @@ function renderResponses(gi, responses, cond) {
       <div class="response-header">
         <div class="response-model-icon ${style.cls}">${style.letter}</div>
         <span class="response-model-name">${esc(j.model)}</span>
+        ${verdict ? `<span class="response-verdict ${verdict.toLowerCase()}">${esc(verdict)}</span>` : ''}
       </div>
       <div class="response-body">${esc(j.response)}</div>
     </div>`;

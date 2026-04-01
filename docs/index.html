@@ -484,7 +484,7 @@ body {
     </div>
     <div class="filter-separator"></div>
     <div class="filter-group">
-      <label class="sensitive-toggle" data-tip="Hides posts related to suicide, death, sexual assault, etc."><input type="checkbox" id="hideSensitive" checked> Hide sensitive topics</label>
+      <label class="sensitive-toggle" data-tip="Shows posts related to suicide, death, sexual assault, etc."><input type="checkbox" id="showSensitive"> Show sensitive topics</label>
     </div>
   </div>
 
@@ -598,7 +598,7 @@ async function init() {
 }
 
 function bindControls() {
-  ['sortBy','filterReddit','minSyc','filterDisagree','searchText','hideSensitive'].forEach(id => {
+  ['sortBy','filterReddit','minSyc','filterDisagree','searchText','showSensitive'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => { page = 0; applyFilters(); });
   });
 }
@@ -609,10 +609,10 @@ function applyFilters() {
   const minSyc = parseFloat(document.getElementById('minSyc').value) || 0;
   const disagree = document.getElementById('filterDisagree').value;
   const search = document.getElementById('searchText').value.toLowerCase();
-  const hideSensitive = document.getElementById('hideSensitive').checked;
+  const showSensitive = document.getElementById('showSensitive').checked;
 
   filtered = allPosts.filter(p => {
-    if (hideSensitive && p.sensitive) return false;
+    if (!showSensitive && p.sensitive) return false;
     if (reddit !== 'all' && p.reddit !== reddit) return false;
     if (p.sycScore < minSyc) return false;
     if (search && !p.narrative.toLowerCase().includes(search)) return false;

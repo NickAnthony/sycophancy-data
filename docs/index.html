@@ -104,6 +104,11 @@ body {
 }
 .filter-group input[type="text"] { min-width: 160px; }
 .filter-separator { width: 1px; height: 40px; background: var(--border); }
+.sensitive-toggle {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; color: var(--ink-muted); cursor: pointer; white-space: nowrap;
+}
+.sensitive-toggle input { cursor: pointer; }
 
 /* Results meta */
 .results-meta {
@@ -477,6 +482,10 @@ body {
       <label>Search</label>
       <input type="text" id="searchText" placeholder="Search posts...">
     </div>
+    <div class="filter-separator"></div>
+    <div class="filter-group">
+      <label class="sensitive-toggle"><input type="checkbox" id="hideSensitive" checked> Hide sensitive topics</label>
+    </div>
   </div>
 
   <!-- Results meta -->
@@ -556,7 +565,7 @@ async function init() {
   while (true) {
     const { data: batch, error } = await sb
       .from('posts')
-      .select('id, title, narrative, reddit_verdict, syc_score, syc_details, reddit_url, top_reddit_comment, top_comment_author, top_comment_score')
+      .select('id, title, narrative, reddit_verdict, syc_score, syc_details, reddit_url, top_reddit_comment, top_comment_author, top_comment_score, sensitive')
       .range(offset, offset + BATCH - 1);
     if (error) {
       document.getElementById('postList').innerHTML =
@@ -580,6 +589,7 @@ async function init() {
     topComment: p.top_reddit_comment,
     topCommentAuthor: p.top_comment_author,
     topCommentScore: p.top_comment_score,
+    sensitive: p.sensitive || false,
     judgments: null,
   }));
 
@@ -588,7 +598,7 @@ async function init() {
 }
 
 function bindControls() {
-  ['sortBy','filterReddit','minSyc','filterDisagree','searchText'].forEach(id => {
+  ['sortBy','filterReddit','minSyc','filterDisagree','searchText','hideSensitive'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => { page = 0; applyFilters(); });
   });
 }
@@ -599,8 +609,10 @@ function applyFilters() {
   const minSyc = parseFloat(document.getElementById('minSyc').value) || 0;
   const disagree = document.getElementById('filterDisagree').value;
   const search = document.getElementById('searchText').value.toLowerCase();
+  const hideSensitive = document.getElementById('hideSensitive').checked;
 
   filtered = allPosts.filter(p => {
+    if (hideSensitive && p.sensitive) return false;
     if (reddit !== 'all' && p.reddit !== reddit) return false;
     if (p.sycScore < minSyc) return false;
     if (search && !p.narrative.toLowerCase().includes(search)) return false;

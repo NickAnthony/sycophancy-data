@@ -108,6 +108,9 @@ body {
   display: flex; align-items: center; gap: 6px;
   font-size: 0.82rem; color: var(--ink-muted); cursor: pointer; white-space: nowrap;
 }
+.sensitive-toggle[data-tip]::after {
+  bottom: calc(100% + 6px); top: auto;
+}
 .sensitive-toggle input { cursor: pointer; }
 
 /* Results meta */
